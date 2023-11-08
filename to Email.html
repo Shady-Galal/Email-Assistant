@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .header {
+      background-color: rgb(81, 158, 221);
+      color: #fff;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .content-container {
+      display: flex;
+      flex: 1;
+    }
+
+    .left-panel {
+      flex: 3;
+      background-color: rgb(187, 224, 237);
+      border-right: 1px solid rgb(81, 158, 221);
+      padding: 20px;
+    }
+
+    .right-panel {
+      flex: 1;
+      background-color: rgb(132, 185, 227);
+      padding: 20px;
+    }
+
+    .input-container {
+      margin-bottom: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+      background-color: #ADD8E6;
+      /* Default header color */
+    }
+
+    tr:nth-child(2) td {
+      background-color: white;
+      /* Set background color of second row cells to white */
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #dataTypeSelector {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Email Assistant</h1>
+  </div>
+
+  <div class="content-container">
+    <div class="left-panel">
+      <div class="input-container">
+        <label for="dataType">Email:</label>
+        <select id="dataType" onchange="generateContent()">
+          <option value="">Select option</option>
+          <!-- Default option -->
+          <option value="TDRA">TDRA</option>
+          <option value="Reconnection">Reconnection</option>
+          <option value="Delivery">Delivery</option>
+        </select>
+      </div>
+
+      <div id="content-container"></div>
+
+      <div id="data-input" class="hidden">
+        <button onclick="copyTable()">Copy</button>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <h2>TO</h2>
+      <div id="dataTypeSelector">
+        <label for="dataType">To:</label>
+        <select id="dataType" onchange="generateContent()">
+          <option value="">Select option</option>
+          <!-- Default option -->
+          <option value="TDRA">TDRA</option>
+          <option value="Sales">Sales</option>
+        </select>
+      </div>
+      <!-- Content for the right panel goes here -->
+      <!-- ... (existing content remains unchanged) ... -->
+    </div>
+  </div>
+
+  <script>
+    function generateContent() {
+      const dataType = document.getElementById('dataType').value;
+      const contentContainer = document.getElementById('content-container');
+
+      // Check if a valid option is selected
+      if (dataType) {
+        let paragraph1, paragraph2;
+        let headerLabels = ['Account Number', 'Contact Number'];
+
+        // Generate content based on the selected data type
+        if (dataType === 'TDRA') {
+          paragraph1 = 'Greetings';
+          paragraph2 = 'Your support is highly appreciated, Customer mentioned that he will complain Etisalat in TDRA.';
+          headerLabels = ['Account Number', 'Contact Number', 'Verification', 'Language'];
+        } else if (dataType === 'Reconnection') {
+          paragraph1 = 'Greetings';
+          paragraph2 = 'Your support is highly appreciated, Customer mentioned that he will complain Etisalat in Reconnection.';
+          headerLabels = ['Account Number', 'Status'];
+        } else if (dataType === 'Delivery') {
+          paragraph1 = 'Greetings';
+          paragraph2 = 'Customer has a pending device delivery request, Customer want the device as soon as possible so kindly support.';
+          headerLabels = ['Account Number', 'Contact Number', 'Request ID', 'Shipment ID', 'Status'];
+        }
+
+        // Create a table with interactive cells
+        const dataTable = document.createElement('table');
+
+        for (let i = 0; i < 2; i++) {
+          const row = document.createElement('tr');
+          for (let j = 0; j < headerLabels.length; j++) {
+            const cell = (i === 0) ? document.createElement('th') : document.createElement('td');
+            cell.setAttribute('contenteditable', 'true');
+            cell.innerText = (i === 0) ? headerLabels[j] : ''; // Set second row cells to empty string
+            row.appendChild(cell);
+          }
+          dataTable.appendChild(row);
+        }
+
+        contentContainer.innerHTML = '';
+        contentContainer.appendChild(document.createElement('br'));
+        contentContainer.appendChild(document.createTextNode(paragraph1));
+        contentContainer.appendChild(document.createElement('br'));
+        contentContainer.appendChild(document.createTextNode(paragraph2));
+        contentContainer.appendChild(document.createElement('br'));
+        contentContainer.appendChild(dataTable);
+        contentContainer.appendChild(document.createElement('br'));
+
+        document.getElementById('data-input').classList.remove('hidden');
+      } else {
+        // Handle the case when "Select option" is chosen (no valid option selected)
+        contentContainer.innerHTML = '';
+        contentContainer.textContent = 'Please select an option.';
+        document.getElementById('data-input').classList.add('hidden');
+      }
+    }
+
+    function copyTable() {
+      const contentContainer = document.getElementById('content-container');
+      const range = document.createRange();
+      range.selectNode(contentContainer);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+      alert('Content Copied');
+    }
+  </script>
+</body>
+
+</html>
